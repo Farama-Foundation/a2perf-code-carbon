@@ -9,7 +9,7 @@ from typing import Optional, Union
 import cpuinfo
 import psutil
 
-from codecarbon.external.logger import logger
+from ..external.logger import logger
 
 
 @contextmanager

@@ -20,7 +20,7 @@ class DataSource:
             "carbon_intensity_per_source_path": "data/private_infra/carbon_intensity_per_source.json",
             "cpu_power_path": "data/hardware/cpu_power.csv",
         }
-        self.module_name = "codecarbon"
+        self.module_name = "rl_perf.metrics.system.codecarbon.codecarbon"
 
     @property
     def geo_js_url(self):

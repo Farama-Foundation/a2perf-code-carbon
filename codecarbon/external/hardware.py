@@ -11,11 +11,11 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 import psutil
 
-from codecarbon.core.cpu import IntelPowerGadget, IntelRAPL
-from codecarbon.core.gpu import get_gpu_details
-from codecarbon.core.units import Energy, Power, Time
-from codecarbon.core.util import detect_cpu_model
-from codecarbon.external.logger import logger
+from ..core.cpu import IntelPowerGadget, IntelRAPL
+from ..core.gpu import get_gpu_details
+from ..core.units import Energy, Power, Time
+from ..core.util import detect_cpu_model
+from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 # default W value for a CPU if no model is found in the ref csv
 POWER_CONSTANT = 85
@@ -262,7 +262,7 @@ class RAM(BaseHardware):
         if unit == "M":
             return nb / 1000
         if unit == "K":
-            return nb / (1000**2)
+            return nb / (1000 ** 2)
 
     def _parse_scontrol(self, scontrol_str):
         mem_matches = re.findall(r"mem=\d+[A-Z]", scontrol_str)
@@ -331,6 +331,7 @@ class RAM(BaseHardware):
                 if self._tracking_mode == "machine"
                 else self.process_memory_GB
             )
+            logger.info(f"RAM: {memory_GB} GB")
             ram_power = Power.from_watts(memory_GB * self.power_per_GB)
         except Exception as e:
             logger.warning(f"Could not measure RAM Power ({str(e)})")

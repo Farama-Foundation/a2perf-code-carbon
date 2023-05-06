@@ -124,7 +124,7 @@ class FakeGPUEnv:
 
 class TestGpu(FakeGPUEnv):
     def test_is_gpu_details_available(self):
-        from codecarbon.core.gpu import is_gpu_details_available
+        from rl_perf.metrics.system.codecarbon.core.gpu import is_gpu_details_available
 
         assert is_gpu_details_available() is True
 

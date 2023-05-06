@@ -4,9 +4,9 @@ import pytest
 import requests
 import responses
 
-from codecarbon.core import co2_signal
-from codecarbon.core.units import Energy
-from codecarbon.external.geography import GeoMetadata
+from rl_perf.metrics.system.codecarbon.codecarbon.core import co2_signal
+from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy
+from rl_perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
 
 
 class TestCO2Signal(unittest.TestCase):

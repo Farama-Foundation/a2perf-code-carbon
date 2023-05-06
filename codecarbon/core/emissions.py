@@ -10,11 +10,11 @@ from typing import Dict, Optional
 
 import pandas as pd
 
-from codecarbon.core import co2_signal
-from codecarbon.core.units import EmissionsPerKWh, Energy
-from codecarbon.external.geography import CloudMetadata, GeoMetadata
-from codecarbon.external.logger import logger
-from codecarbon.input import DataSource, DataSourceException
+from ..core import co2_signal
+from ..core.units import EmissionsPerKWh, Energy
+from ..external.geography import CloudMetadata, GeoMetadata
+from ..external.logger import logger
+from ..input import DataSource, DataSourceException
 
 
 class Emissions:

@@ -13,10 +13,10 @@ from datetime import timedelta, tzinfo
 import arrow
 import requests
 
-from codecarbon.core.schemas import EmissionCreate, ExperimentCreate, RunCreate
-from codecarbon.external.logger import logger
+from ..core.schemas import EmissionCreate, ExperimentCreate, RunCreate
+from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
-# from codecarbon.output import EmissionsData
+# from rl_perf.metrics.system.codecarbon.codecarbon.output import EmissionsData
 
 
 def get_datetime_with_timezone():

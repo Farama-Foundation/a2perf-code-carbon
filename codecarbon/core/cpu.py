@@ -15,11 +15,11 @@ import pandas as pd
 with warnings.catch_warnings(record=True) as w:
     from fuzzywuzzy import fuzz
 
-from codecarbon.core.rapl import RAPLFile
-from codecarbon.core.units import Time
-from codecarbon.core.util import detect_cpu_model
-from codecarbon.external.logger import logger
-from codecarbon.input import DataSource
+from ..core.rapl import RAPLFile
+from ..core.units import Time
+from ..core.util import detect_cpu_model
+from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
+from rl_perf.metrics.system.codecarbon.codecarbon.input import DataSource
 
 
 def is_powergadget_available():

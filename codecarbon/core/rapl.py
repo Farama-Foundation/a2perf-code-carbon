@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from codecarbon.core.units import Energy, Power, Time
-from codecarbon.external.logger import logger
+from ..core.units import Energy, Power, Time
+from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 
 @dataclass

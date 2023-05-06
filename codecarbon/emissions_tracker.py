@@ -12,19 +12,19 @@ from collections import Counter
 from datetime import datetime
 from functools import wraps
 from typing import Callable, List, Optional, Union
-
-from codecarbon._version import __version__
-from codecarbon.core import cpu, gpu
-from codecarbon.core.config import get_hierarchical_config, parse_gpu_ids
-from codecarbon.core.emissions import Emissions
-from codecarbon.core.units import Energy, Power, Time
-from codecarbon.core.util import count_cpus, suppress
-from codecarbon.external.geography import CloudMetadata, GeoMetadata
-from codecarbon.external.hardware import CPU, GPU, RAM
-from codecarbon.external.logger import logger, set_logger_format, set_logger_level
-from codecarbon.external.scheduler import PeriodicScheduler
-from codecarbon.input import DataSource
-from codecarbon.output import (
+from absl import logging
+from ._version import __version__
+from .core import cpu, gpu
+from .core.config import get_hierarchical_config, parse_gpu_ids
+from .core.emissions import Emissions
+from .core.units import Energy, Power, Time
+from .core.util import count_cpus, suppress
+from .external.geography import CloudMetadata, GeoMetadata
+from .external.hardware import CPU, GPU, RAM
+from .external.logger import logger, set_logger_format, set_logger_level
+from .external.scheduler import PeriodicScheduler
+from .input import DataSource
+from .output import (
     BaseOutput,
     CodeCarbonAPIOutput,
     EmissionsData,
@@ -592,7 +592,7 @@ class BaseEmissionsTracker(ABC):
                 emissions = self._prepare_emissions_data(delta=True)
                 logger.info(
                     f"{emissions.emissions_rate * 1000:.6f} g.CO2eq/s mean an estimation of "
-                    + f"{emissions.emissions_rate*3600*24*365:,} kg.CO2eq/year"
+                    + f"{emissions.emissions_rate * 3600 * 24 * 365:,} kg.CO2eq/year"
                 )
                 self._cc_api__out.out(emissions)
                 self._measure_occurrence = 0
@@ -686,7 +686,7 @@ class OfflineEmissionsTracker(BaseEmissionsTracker):
                 logger.error(
                     "Does not support country"
                     + f" with ISO code {self._country_iso_code} "
-                    f"Exception occurred {e}"
+                      f"Exception occurred {e}"
                 )
 
         if self._country_2letter_iso_code:
@@ -749,6 +749,8 @@ def track_emissions(
     gpu_ids: Optional[List] = _sentinel,
     co2_signal_api_token: Optional[str] = _sentinel,
     log_level: Optional[Union[int, str]] = _sentinel,
+    tracking_mode: Optional[str] = _sentinel,
+    baseline_measure_secs: Optional[int] = _sentinel,
 ):
     """
     Decorator that supports both `EmissionsTracker` and `OfflineEmissionsTracker`
@@ -787,6 +789,8 @@ def track_emissions(
     :param log_level: Global codecarbon log level. Accepts one of:
                         {"debug", "info", "warning", "error", "critical"}.
                       Defaults to "info".
+    :param tracking_mode: Tracking mode for the emissions tracker.
+    :param baseline_measure_secs: Interval (in seconds) to measure baseline power usage.
 
     :return: The decorated function
     """
@@ -795,46 +799,60 @@ def track_emissions(
         @wraps(fn)
         def wrapped_fn(*args, **kwargs):
             fn_result = None
-            if offline and offline is not _sentinel:
-                if (country_iso_code is None or country_iso_code is _sentinel) and (
-                    cloud_provider is None or cloud_provider is _sentinel
-                ):
-                    raise Exception("Needs ISO Code of the Country for Offline mode")
-                tracker = OfflineEmissionsTracker(
-                    project_name=project_name,
-                    measure_power_secs=measure_power_secs,
-                    output_dir=output_dir,
-                    output_file=output_file,
-                    save_to_file=save_to_file,
-                    save_to_logger=save_to_logger,
-                    logging_logger=logging_logger,
-                    country_iso_code=country_iso_code,
-                    region=region,
-                    cloud_provider=cloud_provider,
-                    cloud_region=cloud_region,
-                    gpu_ids=gpu_ids,
-                    log_level=log_level,
-                    co2_signal_api_token=co2_signal_api_token,
+
+            if (country_iso_code is None or country_iso_code is _sentinel) and (
+                cloud_provider is None or cloud_provider is _sentinel
+            ):
+                raise Exception("Needs ISO Code of the Country for Offline mode")
+            baseline_output_file = "baseline_emissions.csv"
+            baseline_tracker = OfflineEmissionsTracker(
+                project_name=project_name,
+                measure_power_secs=measure_power_secs,
+                output_dir=output_dir,
+                output_file=baseline_output_file,
+                save_to_file=save_to_file,
+                save_to_logger=save_to_logger,
+                logging_logger=logging_logger,
+                country_iso_code=country_iso_code,
+                region=region,
+                cloud_provider=cloud_provider,
+                cloud_region=cloud_region,
+                gpu_ids=gpu_ids,
+                log_level=log_level,
+                co2_signal_api_token=co2_signal_api_token,
+                tracking_mode=tracking_mode,
+            )
+
+            tracker = OfflineEmissionsTracker(
+                project_name=project_name,
+                measure_power_secs=measure_power_secs,
+                output_dir=output_dir,
+                output_file=output_file,
+                save_to_file=save_to_file,
+                save_to_logger=save_to_logger,
+                logging_logger=logging_logger,
+                country_iso_code=country_iso_code,
+                region=region,
+                cloud_provider=cloud_provider,
+                cloud_region=cloud_region,
+                gpu_ids=gpu_ids,
+                log_level=log_level,
+                co2_signal_api_token=co2_signal_api_token,
+                tracking_mode=tracking_mode,
+            )
+
+            # Measure baseline power usage
+            logging.info(
+                "Measuring baseline power usage for {} seconds...".format(
+                    baseline_measure_secs
                 )
-            else:
-                tracker = EmissionsTracker(
-                    project_name=project_name,
-                    measure_power_secs=measure_power_secs,
-                    output_dir=output_dir,
-                    output_file=output_file,
-                    save_to_file=save_to_file,
-                    save_to_logger=save_to_logger,
-                    logging_logger=logging_logger,
-                    gpu_ids=gpu_ids,
-                    log_level=log_level,
-                    emissions_endpoint=emissions_endpoint,
-                    experiment_id=experiment_id,
-                    api_call_interval=api_call_interval,
-                    api_key=api_key,
-                    api_endpoint=api_endpoint,
-                    save_to_api=save_to_api,
-                    co2_signal_api_token=co2_signal_api_token,
-                )
+            )
+            if baseline_measure_secs is not None:
+                baseline_tracker.start()
+                time.sleep(baseline_measure_secs)
+                baseline_tracker.stop()
+
+            logging.info('Starting Code Carbon emissions tracking for participant')
             tracker.start()
             try:
                 fn_result = fn(*args, **kwargs)

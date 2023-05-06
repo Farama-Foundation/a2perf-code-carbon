@@ -6,8 +6,8 @@ from dash import dash_table as dt
 from dash import dcc
 from dash.dependencies import Input, Output
 
-from codecarbon.viz.components import Components
-from codecarbon.viz.data import Data
+from rl_perf.metrics.system.codecarbon.codecarbon.viz.components import Components
+from rl_perf.metrics.system.codecarbon.codecarbon.viz.data import Data
 
 
 def render_app(df: pd.DataFrame):

@@ -16,9 +16,9 @@ import pandas as pd
 import requests
 
 # from core.schema import EmissionCreate, Emission
-from codecarbon.core.api_client import ApiClient
-from codecarbon.core.util import backup
-from codecarbon.external.logger import logger
+from .core.api_client import ApiClient
+from .core.util import backup
+from .external.logger import logger
 
 
 @dataclass

@@ -6,9 +6,9 @@ import fire
 import pandas as pd
 from dash.dependencies import Input, Output
 
-from codecarbon.core.config import get_hierarchical_config
-from codecarbon.viz.components import Components
-from codecarbon.viz.data import Data
+from ..core.config import get_hierarchical_config
+from rl_perf.metrics.system.codecarbon.codecarbon.viz.components import Components
+from rl_perf.metrics.system.codecarbon.codecarbon.viz.data import Data
 
 
 def render_app(df: pd.DataFrame):

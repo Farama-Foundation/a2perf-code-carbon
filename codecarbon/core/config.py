@@ -68,7 +68,7 @@ def get_hierarchical_config():
     (actually a configparser.SectionProxy instance).
 
     ```
-    >>> from codecarbon.core.config import get_hierarchical_config
+    >>> from ..core.config import get_hierarchical_config
     >>> conf = get_hierarchical_config()
     >>> print(conf)
     ```

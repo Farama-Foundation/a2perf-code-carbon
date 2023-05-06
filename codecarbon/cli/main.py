@@ -3,14 +3,14 @@ import time
 
 import click
 
-from codecarbon import EmissionsTracker
-from codecarbon.cli.cli_utils import (
+from .. import EmissionsTracker
+from .cli_utils import (
     get_api_endpoint,
     get_existing_local_exp_id,
     write_local_exp_id,
 )
-from codecarbon.core.api_client import ApiClient, get_datetime_with_timezone
-from codecarbon.core.schemas import ExperimentCreate
+from ..core.api_client import ApiClient, get_datetime_with_timezone
+from ..core.schemas import ExperimentCreate
 
 DEFAULT_PROJECT_ID = "e60afa92-17b7-4720-91a0-1ae91e409ba1"
 
@@ -47,8 +47,8 @@ def init():
             ""
             if new_local
             else " (from "
-            + click.style("./.codecarbon.config", fg="bright_blue")
-            + ")\n"
+                 + click.style("./.codecarbon.config", fg="bright_blue")
+                 + ")\n"
         )
     )
     if new_local:

@@ -8,8 +8,8 @@ from typing import Callable, Dict, Optional
 
 import requests
 
-from codecarbon.core.cloud import get_env_cloud_details
-from codecarbon.external.logger import logger
+from ..core.cloud import get_env_cloud_details
+from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 
 @dataclass
