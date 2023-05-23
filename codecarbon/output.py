@@ -55,6 +55,7 @@ class EmissionsData:
     longitude: float
     latitude: float
     ram_total_size: float
+    ram_process: float
     tracking_mode: str
     on_cloud: str = "N"
 

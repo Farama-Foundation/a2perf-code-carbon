@@ -61,7 +61,7 @@ class BaseEmissionsTracker(ABC):
     """
 
     def _set_from_conf(
-        self, var, name, default=None, return_type=None, prevent_setter=False
+            self, var, name, default=None, return_type=None, prevent_setter=False
     ):
         """
         Method to standardize private argument setting. Generic flow is:
@@ -133,27 +133,27 @@ class BaseEmissionsTracker(ABC):
         return value
 
     def __init__(
-        self,
-        project_name: Optional[str] = _sentinel,
-        measure_power_secs: Optional[int] = _sentinel,
-        api_call_interval: Optional[int] = _sentinel,
-        api_endpoint: Optional[str] = _sentinel,
-        api_key: Optional[str] = _sentinel,
-        output_dir: Optional[str] = _sentinel,
-        output_file: Optional[str] = _sentinel,
-        save_to_file: Optional[bool] = _sentinel,
-        save_to_api: Optional[bool] = _sentinel,
-        save_to_logger: Optional[bool] = _sentinel,
-        logging_logger: Optional[LoggerOutput] = _sentinel,
-        gpu_ids: Optional[List] = _sentinel,
-        emissions_endpoint: Optional[str] = _sentinel,
-        experiment_id: Optional[str] = _sentinel,
-        co2_signal_api_token: Optional[str] = _sentinel,
-        tracking_mode: Optional[str] = _sentinel,
-        log_level: Optional[Union[int, str]] = _sentinel,
-        on_csv_write: Optional[str] = _sentinel,
-        logger_preamble: Optional[str] = _sentinel,
-        default_cpu_power: Optional[int] = _sentinel,
+            self,
+            project_name: Optional[str] = _sentinel,
+            measure_power_secs: Optional[int] = _sentinel,
+            api_call_interval: Optional[int] = _sentinel,
+            api_endpoint: Optional[str] = _sentinel,
+            api_key: Optional[str] = _sentinel,
+            output_dir: Optional[str] = _sentinel,
+            output_file: Optional[str] = _sentinel,
+            save_to_file: Optional[bool] = _sentinel,
+            save_to_api: Optional[bool] = _sentinel,
+            save_to_logger: Optional[bool] = _sentinel,
+            logging_logger: Optional[LoggerOutput] = _sentinel,
+            gpu_ids: Optional[List] = _sentinel,
+            emissions_endpoint: Optional[str] = _sentinel,
+            experiment_id: Optional[str] = _sentinel,
+            co2_signal_api_token: Optional[str] = _sentinel,
+            tracking_mode: Optional[str] = _sentinel,
+            log_level: Optional[Union[int, str]] = _sentinel,
+            on_csv_write: Optional[str] = _sentinel,
+            logger_preamble: Optional[str] = _sentinel,
+            default_cpu_power: Optional[int] = _sentinel,
     ):
         """
         :param project_name: Project name for current experiment run, default name
@@ -252,6 +252,7 @@ class BaseEmissionsTracker(ABC):
         logger.info("[setup] RAM Tracking...")
         ram = RAM(tracking_mode=self._tracking_mode)
         self._conf["ram_total_size"] = ram.machine_memory_GB
+        self._conf["ram_process"] = ram.process_memory_GB
         self._hardware: List[Union[RAM, CPU, GPU]] = [ram]
 
         # Hardware detection
@@ -319,7 +320,8 @@ class BaseEmissionsTracker(ABC):
         # Run `self._measure_power` every `measure_power_secs` seconds in a
         # background thread
         self._scheduler = PeriodicScheduler(
-            function=self._measure_power_and_energy,
+            # function=self._measure_power_and_energy,
+            function=self.flush,
             interval=self._measure_power_secs,
         )
 
@@ -405,7 +407,7 @@ class BaseEmissionsTracker(ABC):
         # scheduled measurement to shutdown
         self._measure_power_and_energy()
 
-        emissions_data = self._prepare_emissions_data()
+        emissions_data = self._prepare_emissions_data(delta=True)
         for persistence in self.persistence_objs:
             if isinstance(persistence, CodeCarbonAPIOutput):
                 emissions_data = self._prepare_emissions_data(delta=True)
@@ -500,6 +502,7 @@ class BaseEmissionsTracker(ABC):
             latitude=self._conf.get("latitude"),
             ram_total_size=self._conf.get("ram_total_size"),
             tracking_mode=self._conf.get("tracking_mode"),
+            ram_process=self._conf.get("ram_process")
         )
         if delta:
             if self._previous_emissions is None:
@@ -541,8 +544,8 @@ class BaseEmissionsTracker(ABC):
         warning_duration = self._measure_power_secs * 3
         if last_duration > warning_duration:
             warn_msg = (
-                "Background scheduler didn't run for a long period"
-                + " (%ds), results might be inaccurate"
+                    "Background scheduler didn't run for a long period"
+                    + " (%ds), results might be inaccurate"
             )
             logger.warning(warn_msg, last_duration)
 
@@ -597,6 +600,7 @@ class BaseEmissionsTracker(ABC):
                 self._cc_api__out.out(emissions)
                 self._measure_occurrence = 0
         logger.debug(f"last_duration={last_duration}\n------------------------")
+        # self.flush()  # force write to disk
 
     def __enter__(self):
         self.start()
@@ -614,14 +618,14 @@ class OfflineEmissionsTracker(BaseEmissionsTracker):
 
     @suppress(Exception)
     def __init__(
-        self,
-        *args,
-        country_iso_code: Optional[str] = _sentinel,
-        region: Optional[str] = _sentinel,
-        cloud_provider: Optional[str] = _sentinel,
-        cloud_region: Optional[str] = _sentinel,
-        country_2letter_iso_code: Optional[str] = _sentinel,
-        **kwargs,
+            self,
+            *args,
+            country_iso_code: Optional[str] = _sentinel,
+            region: Optional[str] = _sentinel,
+            cloud_provider: Optional[str] = _sentinel,
+            cloud_region: Optional[str] = _sentinel,
+            country_2letter_iso_code: Optional[str] = _sentinel,
+            **kwargs,
     ):
         """
         :param country_iso_code: 3 letter ISO Code of the country where the
@@ -664,13 +668,13 @@ class OfflineEmissionsTracker(BaseEmissionsTracker):
 
             df = DataSource().get_cloud_emissions_data()
             if (
-                len(
-                    df.loc[
-                        (df["provider"] == self._cloud_provider)
-                        & (df["region"] == self._cloud_region)
-                    ]
-                )
-                == 0
+                    len(
+                        df.loc[
+                            (df["provider"] == self._cloud_provider)
+                            & (df["region"] == self._cloud_region)
+                        ]
+                    )
+                    == 0
             ):
                 logger.error(
                     "Cloud Provider/Region "
@@ -727,30 +731,30 @@ class EmissionsTracker(BaseEmissionsTracker):
 
 
 def track_emissions(
-    fn: Callable = None,
-    project_name: Optional[str] = _sentinel,
-    measure_power_secs: Optional[int] = _sentinel,
-    api_call_interval: int = _sentinel,
-    api_endpoint: Optional[str] = _sentinel,
-    api_key: Optional[str] = _sentinel,
-    output_dir: Optional[str] = _sentinel,
-    output_file: Optional[str] = _sentinel,
-    save_to_file: Optional[bool] = _sentinel,
-    save_to_api: Optional[bool] = _sentinel,
-    save_to_logger: Optional[bool] = _sentinel,
-    logging_logger: Optional[LoggerOutput] = _sentinel,
-    offline: Optional[bool] = _sentinel,
-    emissions_endpoint: Optional[str] = _sentinel,
-    experiment_id: Optional[str] = _sentinel,
-    country_iso_code: Optional[str] = _sentinel,
-    region: Optional[str] = _sentinel,
-    cloud_provider: Optional[str] = _sentinel,
-    cloud_region: Optional[str] = _sentinel,
-    gpu_ids: Optional[List] = _sentinel,
-    co2_signal_api_token: Optional[str] = _sentinel,
-    log_level: Optional[Union[int, str]] = _sentinel,
-    tracking_mode: Optional[str] = _sentinel,
-    baseline_measure_secs: Optional[int] = _sentinel,
+        fn: Callable = None,
+        project_name: Optional[str] = _sentinel,
+        measure_power_secs: Optional[float] = _sentinel,
+        api_call_interval: int = _sentinel,
+        api_endpoint: Optional[str] = _sentinel,
+        api_key: Optional[str] = _sentinel,
+        output_dir: Optional[str] = _sentinel,
+        output_file: Optional[str] = _sentinel,
+        save_to_file: Optional[bool] = _sentinel,
+        save_to_api: Optional[bool] = _sentinel,
+        save_to_logger: Optional[bool] = _sentinel,
+        logging_logger: Optional[LoggerOutput] = _sentinel,
+        offline: Optional[bool] = _sentinel,
+        emissions_endpoint: Optional[str] = _sentinel,
+        experiment_id: Optional[str] = _sentinel,
+        country_iso_code: Optional[str] = _sentinel,
+        region: Optional[str] = _sentinel,
+        cloud_provider: Optional[str] = _sentinel,
+        cloud_region: Optional[str] = _sentinel,
+        gpu_ids: Optional[List] = _sentinel,
+        co2_signal_api_token: Optional[str] = _sentinel,
+        log_level: Optional[Union[int, str]] = _sentinel,
+        tracking_mode: Optional[str] = _sentinel,
+        baseline_measure_sec: Optional[float] = _sentinel,
 ):
     """
     Decorator that supports both `EmissionsTracker` and `OfflineEmissionsTracker`
@@ -790,7 +794,7 @@ def track_emissions(
                         {"debug", "info", "warning", "error", "critical"}.
                       Defaults to "info".
     :param tracking_mode: Tracking mode for the emissions tracker.
-    :param baseline_measure_secs: Interval (in seconds) to measure baseline power usage.
+    :param baseline_measure_sec: Interval (in seconds) to measure baseline power usage.
 
     :return: The decorated function
     """
@@ -801,12 +805,12 @@ def track_emissions(
             fn_result = None
 
             if (country_iso_code is None or country_iso_code is _sentinel) and (
-                cloud_provider is None or cloud_provider is _sentinel
+                    cloud_provider is None or cloud_provider is _sentinel
             ):
                 raise Exception("Needs ISO Code of the Country for Offline mode")
             baseline_output_file = "baseline_emissions.csv"
             baseline_tracker = OfflineEmissionsTracker(
-                project_name=project_name,
+                project_name=f"{project_name}_baseline",
                 measure_power_secs=measure_power_secs,
                 output_dir=output_dir,
                 output_file=baseline_output_file,
@@ -844,14 +848,14 @@ def track_emissions(
             # Measure baseline power usage
             logging.info(
                 "Measuring baseline power usage for {} seconds...".format(
-                    baseline_measure_secs
+                    baseline_measure_sec
                 )
             )
-            if baseline_measure_secs is not None:
+            if baseline_measure_sec is not None:
                 baseline_tracker.start()
-                time.sleep(baseline_measure_secs)
+                time.sleep(baseline_measure_sec)
                 baseline_tracker.stop()
-
+            del baseline_tracker
             logging.info('Starting Code Carbon emissions tracking for participant')
             tracker.start()
             try:
