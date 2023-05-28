@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..core.units import Energy, Power, Time
 from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
@@ -9,10 +9,10 @@ class RAPLFile:
     name: str  # RAPL device being measured
     path: str  # Path to file containing RAPL reading
     max_path: str  # Path to corresponding file containing maximum possible RAPL reading
-    energy_delta: Energy = Energy(0)  # Energy consumed in kWh
-    power: Power = Power(0)  # Power based on reading
-    last_energy: Energy = Energy(0)  # Last energy reading in kWh
-    max_energy_reading: Energy = Energy(0)  # Max value energy can hold before it wraps
+    energy_delta: Energy = field(default=None)  # Energy consumed in kWh
+    power: Power = field(default=None)  # Power based on reading
+    last_energy: Energy = field(default=None)  # Last energy reading in kWh
+    max_energy_reading: Energy = field(default=None)  # Max value energy can hold before it wraps
 
     def __post_init__(self):
         self.last_energy = self._get_value()
