@@ -97,12 +97,12 @@ class GPU(BaseHardware):
 @dataclass
 class CPU(BaseHardware):
     def __init__(
-        self,
-        output_dir: str,
-        mode: str,
-        model: str,
-        tdp: int,
-        rapl_dir: str = "/sys/class/powercap/intel-rapl",
+            self,
+            output_dir: str,
+            mode: str,
+            model: str,
+            tdp: int,
+            rapl_dir: str = "/sys/class/powercap/intel-rapl",
     ):
         self._output_dir = output_dir
         self._mode = mode
@@ -186,11 +186,11 @@ class CPU(BaseHardware):
 
     @classmethod
     def from_utils(
-        cls,
-        output_dir: str,
-        mode: str,
-        model: Optional[str] = None,
-        tdp: Optional[int] = None,
+            cls,
+            output_dir: str,
+            mode: str,
+            model: Optional[str] = None,
+            tdp: Optional[int] = None,
     ) -> "CPU":
         if model is None:
             model = detect_cpu_model()
@@ -213,10 +213,10 @@ class RAM(BaseHardware):
     power_per_GB = 3 / 8  # W/GB
 
     def __init__(
-        self,
-        pid: int = psutil.Process().pid,
-        children: bool = True,
-        tracking_mode: str = "machine",
+            self,
+            pid: int = psutil.Process().pid,
+            children: bool = True,
+            tracking_mode: str = "machine",
     ):
         """
         Instantiate a RAM object from a reference pid. If none is provided, will use the
@@ -242,6 +242,8 @@ class RAM(BaseHardware):
         """
         current_process = psutil.Process(self._pid)
         children = current_process.children(recursive=True)
+        logger.info(f"Found {len(children)} children processes")
+        logger.info(f"Children pids: {[child.pid for child in children]}")
         return [child.memory_info().rss for child in children]
 
     def _read_slurm_scontrol(self):
