@@ -15,9 +15,9 @@ import pandas as pd
 with warnings.catch_warnings(record=True) as w:
     from fuzzywuzzy import fuzz
 
-from ..core.rapl import RAPLFile
-from ..core.units import Time
-from ..core.util import detect_cpu_model
+from rl_perf.metrics.system.codecarbon.codecarbon.core.rapl import RAPLFile
+from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Time
+from rl_perf.metrics.system.codecarbon.codecarbon.core.util import detect_cpu_model
 from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 from rl_perf.metrics.system.codecarbon.codecarbon.input import DataSource
 

@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import requests
 
-from ..core.units import EmissionsPerKWh, Energy
+from rl_perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh, Energy
 from rl_perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
 
 URL = "https://api.co2signal.com/v1/latest"

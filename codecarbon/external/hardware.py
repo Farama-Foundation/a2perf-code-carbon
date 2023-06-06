@@ -11,10 +11,10 @@ from typing import Dict, Iterable, List, Optional, Tuple
 
 import psutil
 
-from ..core.cpu import IntelPowerGadget, IntelRAPL
-from ..core.gpu import get_gpu_details
-from ..core.units import Energy, Power, Time
-from ..core.util import detect_cpu_model
+from rl_perf.metrics.system.codecarbon.codecarbon.core.cpu import IntelPowerGadget, IntelRAPL
+from rl_perf.metrics.system.codecarbon.codecarbon.core.gpu import get_gpu_details
+from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy, Power, Time
+from rl_perf.metrics.system.codecarbon.codecarbon.core.util import detect_cpu_model
 from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 # default W value for a CPU if no model is found in the ref csv

@@ -13,7 +13,7 @@ from datetime import timedelta, tzinfo
 import arrow
 import requests
 
-from ..core.schemas import EmissionCreate, ExperimentCreate, RunCreate
+from rl_perf.metrics.system.codecarbon.codecarbon.core.schemas import EmissionCreate, ExperimentCreate, RunCreate
 from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 # from rl_perf.metrics.system.codecarbon.codecarbon.output import EmissionsData

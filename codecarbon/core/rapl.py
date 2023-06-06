@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from ..core.units import Energy, Power, Time
+from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy, Power, Time
 from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 

@@ -9,8 +9,8 @@ from .cli_utils import (
     get_existing_local_exp_id,
     write_local_exp_id,
 )
-from ..core.api_client import ApiClient, get_datetime_with_timezone
-from ..core.schemas import ExperimentCreate
+from rl_perf.metrics.system.codecarbon.codecarbon.core.api_client import ApiClient, get_datetime_with_timezone
+from rl_perf.metrics.system.codecarbon.codecarbon.core.schemas import ExperimentCreate
 
 DEFAULT_PROJECT_ID = "e60afa92-17b7-4720-91a0-1ae91e409ba1"
 
