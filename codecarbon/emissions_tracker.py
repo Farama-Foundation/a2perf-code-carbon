@@ -197,6 +197,9 @@ class BaseEmissionsTracker(ABC):
             self._gpu_count = len(gpu.get_gpu_static_info())
         else:
             logger.info("No GPU found.")
+            self._gpu_count = 0
+            self._gpu_model = "None"
+
         logger.info("[setup] CPU Tracking...")
         if cpu.is_powergadget_available():
             logger.info("Tracking Intel CPU via Power Gadget")
@@ -220,7 +223,7 @@ class BaseEmissionsTracker(ABC):
                 power = user_input_power
             logger.info(f"CPU Model on constant consumption mode: {model}")
             self._cpu_model = model
-            if tdp:
+            if power is not None and model is not None:
                 hardware = CPU.from_utils(self._output_dir, "constant", model, power)
                 self._hardware.append(hardware)
             else:
@@ -230,7 +233,7 @@ class BaseEmissionsTracker(ABC):
                 hardware = CPU.from_utils(self._output_dir, "constant")
                 self._hardware.append(hardware)
 
-        self._hardware = list(map(lambda x: x.description(), self._hardware))
+        # self._hardware = list(map(lambda x: x.description(), self._hardware))
 
         logger.info(">>> Tracker's metadata:")
         logger.info(f"  Platform system: {self._os}")
@@ -359,7 +362,7 @@ class BaseEmissionsTracker(ABC):
         else:
             logger.warning("Tracker already stopped !")
 
-        emissions_data = self._prepare_emissions_data()
+        emissions_data = self._prepare_emissions_data(delta=True)
 
         for persistence in self.persistence_objs:
             if isinstance(persistence, CodeCarbonAPIOutput):
@@ -536,6 +539,7 @@ class BaseEmissionsTracker(ABC):
         self.stop()
 
 
+@gin.configurable
 class OfflineEmissionsTracker(BaseEmissionsTracker):
     """
     Offline implementation of the `EmissionsTracker`
