@@ -120,29 +120,35 @@ class FileOutput(BaseOutput):
             file_exists = False
 
         if not file_exists:
-            df = pd.DataFrame(columns=data.values.keys())
-            df = pd.concat([df, pd.DataFrame.from_records([dict(data.values)])])
-        elif self.on_csv_write == "append":
-            df = pd.read_csv(self.save_file_path)
-            df = pd.concat([df, pd.DataFrame.from_records([dict(data.values)])])
+            logger.info(f"Creating new emission file at {self.save_file_path}")
+            df = pd.DataFrame.from_records([dict(data.values)])
+            df.to_csv(self.save_file_path, index=False)
         else:
-            df = pd.read_csv(self.save_file_path)
-            df_run = df.loc[df.run_id == data.run_id]
-            if len(df_run) < 1:
-                df = pd.concat([df, pd.DataFrame.from_records([dict(data.values)])])
-            elif len(df_run) > 1:
-                logger.warning(
-                    f"CSV contains more than 1 ({len(df_run)})"
-                    + f" rows with current run ID ({data.run_id})."
-                    + "Appending instead of updating."
-                )
-                df = pd.concat([df, pd.DataFrame.from_records([dict(data.values)])])
+            if self.on_csv_write == "append":
+                with open(self.save_file_path, 'a') as f:
+                    writer = csv.DictWriter(f, fieldnames=data.values.keys())
+                    writer.writerow(dict(data.values))
             else:
-                df.at[
-                    df.run_id == data.run_id, data.values.keys()
-                ] = data.values.values()
-
-        df.to_csv(self.save_file_path, index=False)
+                df = pd.read_csv(self.save_file_path)
+                df_run = df.loc[df.run_id == data.run_id]
+                if len(df_run) < 1:
+                    with open(self.save_file_path, 'a') as f:
+                        writer = csv.DictWriter(f, fieldnames=data.values.keys())
+                        writer.writerow(dict(data.values))
+                elif len(df_run) > 1:
+                    logger.warning(
+                        f"CSV contains more than 1 ({len(df_run)})"
+                        + f" rows with current run ID ({data.run_id})."
+                        + "Appending instead of updating."
+                    )
+                    with open(self.save_file_path, 'a') as f:
+                        writer = csv.DictWriter(f, fieldnames=data.values.keys())
+                        writer.writerow(dict(data.values))
+                else:
+                    df.at[
+                        df.run_id == data.run_id, data.values.keys()
+                    ] = data.values.values()
+                    df.to_csv(self.save_file_path, index=False)
 
 
 class HTTPOutput(BaseOutput):
