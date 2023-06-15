@@ -74,6 +74,7 @@ class BaseEmissionsTracker(ABC):
             save_to_api: Optional[bool] = None,
             save_to_logger: Optional[bool] = None,
             logging_logger: Optional[LoggerOutput] = None,
+            cpu_tdp: Optional[int] = None,
             gpu_ids: Optional[List] = None,
             emissions_endpoint: Optional[str] = None,
             experiment_id: Optional[str] = None,
@@ -179,10 +180,10 @@ class BaseEmissionsTracker(ABC):
             self._gpu_count = len(self._gpu_ids)
 
         logger.info("[setup] RAM Tracking...")
-        ram = RAM(tracking_mode=self._tracking_mode)
-        self._ram_total_size = ram.machine_memory_GB
-        self._ram_process = ram.process_memory_GB
-        self._hardware: List[Union[RAM, CPU, GPU]] = [ram]
+        self._ram = RAM(tracking_mode=self._tracking_mode)
+        # self._ram_total_size = ram.machine_memory_GB
+        # self._ram_process = ram.process_memory_GB
+        self._hardware: List[Union[RAM, CPU, GPU]] = [self._ram]
 
         # Hardware detection
         logger.info("[setup] GPU Tracking...")
@@ -203,12 +204,12 @@ class BaseEmissionsTracker(ABC):
         logger.info("[setup] CPU Tracking...")
         if cpu.is_powergadget_available():
             logger.info("Tracking Intel CPU via Power Gadget")
-            hardware = CPU.from_utils(self._output_dir, "intel_power_gadget")
+            hardware = CPU.from_utils(self._output_dir, "intel_power_gadget", tdp=cpu_tdp)
             self._hardware.append(hardware)
             self._cpu_model = hardware.get_model()
         elif cpu.is_rapl_available():
             logger.info("Tracking Intel CPU via RAPL interface")
-            hardware = CPU.from_utils(self._output_dir, "intel_rapl")
+            hardware = CPU.from_utils(self._output_dir, "intel_rapl", tdp=cpu_tdp)
             self._hardware.append(hardware)
             self._cpu_model = hardware.get_model()
         else:
@@ -239,7 +240,7 @@ class BaseEmissionsTracker(ABC):
         logger.info(f"  Platform system: {self._os}")
         logger.info(f"  Python version: {self._python_version}")
         logger.info(f"  CodeCarbon version: {self._codecarbon_version}")
-        logger.info(f"  Available RAM : {self._ram_total_size:.3f} GB")
+        logger.info(f"  Available RAM : {self._ram.machine_memory_GB:.3f} GB")
         logger.info(f"  CPU count: {self._cpu_count}")
         logger.info(f"  CPU model: {self._cpu_model}")
         logger.info(f"  GPU count: {self._gpu_count}")
@@ -335,7 +336,7 @@ class BaseEmissionsTracker(ABC):
         # scheduled measurement to shutdown
         self._measure_power_and_energy()
 
-        emissions_data = self._prepare_emissions_data(delta=True)
+        emissions_data = self._prepare_emissions_data()
         for persistence in self.persistence_objs:
             if isinstance(persistence, CodeCarbonAPIOutput):
                 emissions_data = self._prepare_emissions_data(delta=True)
@@ -362,7 +363,7 @@ class BaseEmissionsTracker(ABC):
         else:
             logger.warning("Tracker already stopped !")
 
-        emissions_data = self._prepare_emissions_data(delta=True)
+        emissions_data = self._prepare_emissions_data()
 
         for persistence in self.persistence_objs:
             if isinstance(persistence, CodeCarbonAPIOutput):
@@ -428,9 +429,9 @@ class BaseEmissionsTracker(ABC):
             cpu_model=self._cpu_model,
             longitude=self._longitude,
             latitude=self._latitude,
-            ram_total_size=self._ram_total_size,
+            ram_total_size=self._ram.machine_memory_GB,
             tracking_mode=self._tracking_mode,
-            ram_process=self._ram_process,
+            ram_process=self._ram.process_memory_GB,
         )
 
         if delta:
@@ -681,6 +682,7 @@ def track_emissions(
         region: Optional[str] = None,
         cloud_provider: Optional[str] = None,
         cloud_region: Optional[str] = None,
+        cpu_tdp: Optional[int] = None,
         gpu_ids: Optional[List] = None,
         co2_signal_api_token: Optional[str] = None,
         log_level: Optional[Union[int, str]] = None,
@@ -751,6 +753,7 @@ def track_emissions(
                 cloud_provider=cloud_provider,
                 cloud_region=cloud_region,
                 gpu_ids=gpu_ids,
+                cpu_tdp=cpu_tdp,
                 log_level=log_level,
                 co2_signal_api_token=co2_signal_api_token,
                 tracking_mode=tracking_mode,
@@ -768,6 +771,7 @@ def track_emissions(
                 region=region,
                 cloud_provider=cloud_provider,
                 cloud_region=cloud_region,
+                cpu_tdp=cpu_tdp,
                 gpu_ids=gpu_ids,
                 log_level=log_level,
                 co2_signal_api_token=co2_signal_api_token,

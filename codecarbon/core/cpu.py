@@ -213,7 +213,7 @@ class IntelRAPL:
                     self._rapl_files.append(
                         RAPLFile(name=name, path=rapl_file, max_path=rapl_file_max)
                     )
-                    logger.debug(f"We will read Intel RAPL files at {rapl_file}")
+                    logger.info(f"We will read Intel RAPL files at {rapl_file}")
                 except PermissionError as e:
                     logger.error(
                         "Unable to read Intel RAPL files for CPU power, we will use a constant for your CPU power."

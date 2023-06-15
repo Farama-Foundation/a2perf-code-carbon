@@ -45,7 +45,7 @@ class RAPLFile:
                 f"In RAPLFile : Current energy value ({energy}) is lower than previous value ({self.last_energy}). Assuming wrap-around! Source file : {self.path}"
             )
             energy = energy + self.max_energy_reading
-        self.power = self.power.from_energies_and_delay(
+        self.power = Power.from_energies_and_delay(
             energy, self.last_energy, duration
         )
         self.energy_delta = energy - self.last_energy
