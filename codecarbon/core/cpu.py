@@ -54,11 +54,11 @@ class IntelPowerGadget:
     _windows_exec_backup = "C:\\Program Files\\Intel\\Power Gadget 3.5\\PowerLog3.0.exe"
 
     def __init__(
-        self,
-        output_dir: str = ".",
-        duration=1,
-        resolution=100,
-        log_file_name="intel_power_gadget_log.csv",
+            self,
+            output_dir: str = ".",
+            duration=1,
+            resolution=100,
+            log_file_name="intel_power_gadget_log.csv",
     ):
         self._log_file_path = os.path.join(output_dir, log_file_name)
         self._system = sys.platform.lower()
@@ -115,7 +115,8 @@ class IntelPowerGadget:
             )
         elif self._system.startswith("darwin"):
             returncode = subprocess.call(
-                f"'{self._cli}' -duration {self._duration} -resolution {self._resolution} -file {self._log_file_path} > /dev/null",  # noqa: E501
+                f"'{self._cli}' -duration {self._duration} -resolution {self._resolution} -file {self._log_file_path} > /dev/null",
+                # noqa: E501
                 shell=True,
             )
         else:
@@ -293,14 +294,14 @@ class TDP:
 
     @staticmethod
     def _get_single_direct_match(
-        ratios: list, max_ratio: int, cpu_df: pd.DataFrame
+            ratios: list, max_ratio: int, cpu_df: pd.DataFrame
     ) -> str:
         idx = ratios.index(max_ratio)
         cpu_matched = cpu_df["Name"].iloc[idx]
         return cpu_matched
 
     def _get_matching_cpu(
-        self, model_raw: str, cpu_df: pd.DataFrame, greedy=False
+            self, model_raw: str, cpu_df: pd.DataFrame, greedy=False
     ) -> str:
         """
         Get matching cpu name
@@ -371,7 +372,7 @@ class TDP:
             power = self._get_cpu_power_from_registry(cpu_model_detected)
 
             if power:
-                logger.debug(
+                logger.info(
                     f"CPU : We detect a {cpu_model_detected} with a TDP of {power} W"
                 )
                 return cpu_model_detected, power
