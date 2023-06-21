@@ -203,12 +203,12 @@ class BaseEmissionsTracker(ABC):
         logger.info("[setup] CPU Tracking...")
         if cpu.is_powergadget_available():
             logger.info("Tracking Intel CPU via Power Gadget")
-            hardware = CPU.from_utils(self._output_dir, "intel_power_gadget", tdp=cpu_tdp)
+            hardware = CPU.from_utils(self._output_dir, "intel_power_gadget", tdp=default_cpu_power)
             self._hardware.append(hardware)
             self._cpu_model = hardware.get_model()
         elif cpu.is_rapl_available():
             logger.info("Tracking Intel CPU via RAPL interface")
-            hardware = CPU.from_utils(self._output_dir, "intel_rapl", tdp=cpu_tdp)
+            hardware = CPU.from_utils(self._output_dir, "intel_rapl", tdp=default_cpu_power)
             self._hardware.append(hardware)
             self._cpu_model = hardware.get_model()
         else:

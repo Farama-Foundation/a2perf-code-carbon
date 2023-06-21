@@ -75,7 +75,7 @@ def detect_cpu_model() -> str:
 
 
 def count_cpus() -> int:
-    if os.environ.get("SLURM_JOB_ID") is None:
+    if os.environ.get("SLURM_JOBID") is None:
         return psutil.cpu_count()
 
     try:
