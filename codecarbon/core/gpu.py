@@ -21,7 +21,7 @@
 
 import pynvml
 
-from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
+from a2perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 
 def to_utf8(str_or_bytes):

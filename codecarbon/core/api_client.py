@@ -13,10 +13,10 @@ from datetime import timedelta, tzinfo
 import arrow
 import requests
 
-from rl_perf.metrics.system.codecarbon.codecarbon.core.schemas import EmissionCreate, ExperimentCreate, RunCreate
-from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
+from a2perf.metrics.system.codecarbon.codecarbon.core.schemas import EmissionCreate, ExperimentCreate, RunCreate
+from a2perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
-# from rl_perf.metrics.system.codecarbon.codecarbon.output import EmissionsData
+# from a2perf.metrics.system.codecarbon.codecarbon.output import EmissionsData
 
 
 def get_datetime_with_timezone():

@@ -4,8 +4,8 @@ import pandas as pd
 import requests
 from dash import dash_table as dt
 
-from rl_perf.metrics.system.codecarbon.codecarbon.core.emissions import Emissions
-from rl_perf.metrics.system.codecarbon.codecarbon.input import DataSource, DataSourceException
+from a2perf.metrics.system.codecarbon.codecarbon.core.emissions import Emissions
+from a2perf.metrics.system.codecarbon.codecarbon.input import DataSource, DataSourceException
 
 
 class Data:
@@ -107,11 +107,11 @@ class Data:
             country_name = global_energy_mix[country_iso_code]["country_name"]
 
             if country_iso_code not in ["_define", "ATA"]:
-                from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy
+                from a2perf.metrics.system.codecarbon.codecarbon.core.units import Energy
 
                 energy_consumed = Energy.from_energy(kWh=net_energy_consumed)
 
-                from rl_perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
+                from a2perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
 
                 country_emissions = self._emissions.get_country_emissions(
                     energy_consumed,
@@ -173,11 +173,11 @@ class Data:
         for region_name in region_emissions.keys():
             region_code = region_emissions[region_name]["regionCode"]
             if region_name not in ["_unit"]:
-                from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy
+                from a2perf.metrics.system.codecarbon.codecarbon.core.units import Energy
 
                 energy_consumed = Energy.from_energy(kWh=net_energy_consumed)
 
-                from rl_perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
+                from a2perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
 
                 emissions = self._emissions.get_region_emissions(
                     energy_consumed,
@@ -210,7 +210,7 @@ class Data:
             ["provider", "providerName", "region", "impact", "country_name"]
         ]
 
-        from rl_perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh
+        from a2perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh
 
         cloud_emissions["emissions"] = cloud_emissions.apply(
             lambda row: EmissionsPerKWh.from_g_per_kWh(row.impact).kgs_per_kWh

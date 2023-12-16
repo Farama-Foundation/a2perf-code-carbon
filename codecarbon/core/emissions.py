@@ -10,8 +10,8 @@ from typing import Dict, Optional
 
 import pandas as pd
 
-from rl_perf.metrics.system.codecarbon.codecarbon.core import co2_signal
-from rl_perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh, Energy
+from a2perf.metrics.system.codecarbon.codecarbon.core import co2_signal
+from a2perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh, Energy
 from ..external.geography import CloudMetadata, GeoMetadata
 from ..external.logger import logger
 from ..input import DataSource, DataSourceException

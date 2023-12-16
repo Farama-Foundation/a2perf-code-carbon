@@ -23,7 +23,7 @@ from typing import Any, Dict, Optional
 
 import requests
 
-from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
+from a2perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 
 def postprocess_gcp_cloud_metadata(cloud_metadata: Dict[str, Any]) -> Dict[str, Any]:

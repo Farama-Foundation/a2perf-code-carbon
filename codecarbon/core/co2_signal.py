@@ -2,8 +2,8 @@ from typing import Any, Dict
 
 import requests
 
-from rl_perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh, Energy
-from rl_perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
+from a2perf.metrics.system.codecarbon.codecarbon.core.units import EmissionsPerKWh, Energy
+from a2perf.metrics.system.codecarbon.codecarbon.external.geography import GeoMetadata
 
 URL = "https://api.co2signal.com/v1/latest"
 CO2_SIGNAL_API_TIMEOUT = 30

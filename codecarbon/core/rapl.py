@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
-from rl_perf.metrics.system.codecarbon.codecarbon.core.units import Energy, Power, Time
-from rl_perf.metrics.system.codecarbon.codecarbon.external.logger import logger
+from a2perf.metrics.system.codecarbon.codecarbon.core.units import Energy, Power, Time
+from a2perf.metrics.system.codecarbon.codecarbon.external.logger import logger
 
 
 @dataclass
